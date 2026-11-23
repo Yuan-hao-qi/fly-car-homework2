@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小鹏汇天“陆地航母”X3-F 全方位安全分析 | Automated Vehicles Safety 课程作业</title>
+<style>
+:root{
+  --bg:#f4f5f2; --paper:#ffffff; --ink:#1d2630; --muted:#5a6571; --line:#d7d2c3;
+  --accent:#146653; --accent-deep:#0d4437; --accent-soft:#e6efeb;
+  --warn:#a8542f; --warn-soft:#f5ebe2; --good:#2f6b4f; --gold:#8a6d3b;
+  --red:#9c3b36; --red-soft:#f4e7e4;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+sup.ref a{color:var(--accent);font-weight:600}
+sup.ref a:hover{text-decoration:underline}
+
+nav.topbar{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.topbar .inner{max-width:960px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px;height:56px}
+.topbar .brand{font-family:var(--serif);font-weight:700;font-size:15px;color:var(--accent-deep);white-space:nowrap}
+.topbar ul{display:flex;gap:4px;overflow-x:auto;list-style:none;scrollbar-width:none}
+.topbar ul::-webkit-scrollbar{display:none}
+.topbar ul a{display:block;padding:6px 10px;font-size:13px;color:var(--muted);white-space:nowrap;border-radius:6px}
+.topbar ul a:hover{background:var(--accent-soft);color:var(--accent);text-decoration:none}
+
+header.hero{padding:104px 0 34px}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--gold);margin-bottom:14px}
+header.hero h1{font-family:var(--serif);font-size:33px;line-height:1.4;font-weight:700;color:var(--accent-deep);margin-bottom:14px}
+header.hero .sub{font-size:17px;color:var(--muted);max-width:780px}
+.meta-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:20px;font-size:14px;color:var(--muted)}
+.meta-row span b{color:var(--ink);font-weight:600}
+.hero-figure{margin:28px 0 8px}
+.hero-figure img{width:100%;border-radius:8px;display:block;border:1px solid var(--line)}
+figcaption{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.7;padding-left:10px;border-left:3px solid var(--line)}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 16px;text-align:center}
+.card .num{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--accent);line-height:1.2}
+.card .num small{font-size:14px;font-weight:600}
+.card .lab{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+
+section{margin:48px 0}
+h2.sec{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--accent-deep);border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:18px}
+h2.sec .no{color:var(--gold);margin-right:8px}
+h3{font-size:18px;font-weight:700;color:var(--accent-deep);margin:26px 0 10px}
+p{margin:12px 0}
+.lead{font-size:16.5px}
+ul.tight{margin:10px 0 10px 24px}
+ul.tight li{margin:6px 0}
+
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;margin-right:6px;font-weight:600;vertical-align:1px}
+.tag.official{background:var(--accent-soft);color:var(--accent)}
+.tag.media{background:#eef0ec;color:#4a5a4f}
+.tag.std{background:#f0ece6;color:var(--gold)}
+.tag.calc{background:var(--warn-soft);color:var(--warn)}
+.tag.open{background:#f2e9ee;color:#7a4a68}
+.tag.claim{background:#eef1f5;color:#3d5266}
+
+.callout{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:15px}
+.callout.warn{background:var(--warn-soft);border-left-color:var(--warn)}
+.callout.red{background:var(--red-soft);border-left-color:var(--red)}
+.callout p{margin:6px 0}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14.5px;background:var(--paper)}
+th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:#e9efec;color:var(--accent-deep);font-weight:700}
+tr:nth-child(even) td{background:#faf9f6}
+.tbl-note{font-size:13px;color:var(--muted);margin-top:-6px}
+
+.timeline{margin:22px 0 10px;padding-left:26px;border-left:2px solid var(--line)}
+.tl-item{position:relative;padding:0 0 20px 18px}
+.tl-item::before{content:"";position:absolute;left:-32px;top:6px;width:13px;height:13px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.tl-item .when{font-weight:700;color:var(--accent-deep);font-size:15px}
+.tl-item .what{font-size:15px;color:var(--ink);margin-top:2px}
+
+figure.fig{margin:24px 0}
+figure.fig img{width:100%;border-radius:8px;border:1px solid var(--line)}
+
+/* FTA 树（表格化层级） */
+.fta{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px;margin:18px 0;font-size:14.5px}
+.fta .gate{font-family:var(--mono);font-weight:700;color:var(--red)}
+.fta .l1{margin:12px 0 4px;font-weight:700;color:var(--accent-deep)}
+.fta .l2{margin:8px 0 2px 4px;padding-left:18px}
+.fta .l3{margin:4px 0 2px 40px;color:var(--muted)}
+
+/* 风险矩阵 */
+.matrix{border-collapse:separate;border-spacing:4px;margin:16px 0}
+.matrix td{width:110px;height:56px;text-align:center;font-size:13px;border:1px solid var(--line)}
+.matrix .h{background:#f4d7d2;color:var(--red);font-weight:700}
+.matrix .m{background:#f6e8d2;color:#8a6d3b;font-weight:700}
+.matrix .l{background:#e6efeb;color:var(--good);font-weight:700}
+.matrix .axis{background:transparent;border:none;font-weight:700;color:var(--muted);width:auto}
+
+ol.refs{margin:14px 0 0 22px;font-size:14px}
+ol.refs li{margin:9px 0;line-height:1.7}
+ol.refs li:target{background:var(--accent-soft);outline:4px solid var(--accent-soft)}
+
+footer{margin:60px 0 30px;padding-top:22px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+footer p{margin:6px 0}
+@media(max-width:640px){header.hero h1{font-size:25px}h2.sec{font-size:20px}table{font-size:13.5px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="inner">
+    <div class="brand">Automated Vehicles Safety · 案例研究</div>
+    <ul>
+      <li><a href="#summary">执行摘要</a></li>
+      <li><a href="#s01">01 范围方法</a></li>
+      <li><a href="#s02">02 运行剖面</a></li>
+      <li><a href="#s03">03 关键系统</a></li>
+      <li><a href="#s04">04 FMEA</a></li>
+      <li><a href="#s05">05 FTA</a></li>
+      <li><a href="#s06">06 SOTIF</a></li>
+      <li><a href="#s07">07 安全设计</a></li>
+      <li><a href="#s08">08 适航路径</a></li>
+      <li><a href="#s09">09 风险矩阵</a></li>
+      <li><a href="#s10">10 改进建议</a></li>
+      <li><a href="#s11">11 课程启示</a></li>
+      <li><a href="#refs">参考文献</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AUTOMATED VEHICLES SAFETY · FUNDAMENTALS OF FLYING VEHICLE TECHNOLOGY · 案例 03</div>
+    <h1>小鹏汇天“陆地航母”X3-F 分体式飞行汽车：全方位安全分析</h1>
+    <p class="sub">本报告以系统安全工程方法（PHA → FMEA/FMECA → FTA → SOTIF → 风险矩阵）对 X3-F 飞行体及其陆行平台、对接机构与运行环境开展深度安全分析。全部安全声称按“已验证 / 设计声称 / 未披露”三级标注；未公开的冗余层数、伞降配置、故障试验数据与风况包线一律写明“未披露”，不以网络传闻填补。</p>
+    <div class="meta-row">
+      <span><b>作者：</b>学生姓名（待填）</span>
+      <span><b>课程：</b>Automated Vehicles Safety / 飞行汽车技术基础 · 2026</span>
+      <span><b>证据截止：</b>2026-11-23</span>
+      <span><b>版本：</b>1.0</span>
+    </div>
+    <figure class="hero-figure">
+      <img src="https://xps01.xiaopeng.com/cms/content/pic/2024/09-04/11-20-5706141741116061.jpg" alt="小鹏汇天陆地航母官方产品渲染图：陆行体与悬停的飞行体">
+      <figcaption>图 0。“陆地航母”官方产品渲染图。图片来源：小鹏汽车官方新闻页（2024-09-04），版权归小鹏汇天所有，本作业仅作课堂教学安全分析引用。<sup class="ref">[1]<a href="#ref1">¹</a></sup></figcaption>
+    </figure>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="summary">
+<h2 class="sec"><span class="no">★</span>执行摘要</h2>
+<p class="lead">1. <b>安全结论总判断：</b>截至 2026-11-23，X3-F 处于“设计声称充分、公开试验证据不足、适航未取证”的阶段。企业公开材料给出了较完整的冗余架构声称（三余度异构飞控导航、双包电池、双操作系统、全域备份），但故障注入试验、降级包线、坠撞试验与风况包线数据均未公开，境内 TC 尚未颁发。<sup class="ref">[1]<a href="#ref1">¹</a></sup><sup class="ref">[2]<a href="#ref2">²</a></sup></p>
+<p>2. <b>已验证（公开可观察）：</b>2024 年 11 月珠海航展完成自动驾驶四科目公开首飞、2025 年 10 月迪拜载人公开飞行；旅航者 X2 于 2023 年 10 月完成 50 m 超低空多伞开伞试验（配重 850 kg、接地速度 5.2 m/s），属企业公开演示的救生技术储备。<sup class="ref">[3]<a href="#ref3">³</a></sup><sup class="ref">[4]<a href="#ref4">⁴</a></sup></p>
+<p>3. <b>设计声称（企业公开表述，未以公开试验数据证实）：</b>全域冗余（动力、飞控、供电、通信、操控）、智能飞控导航三余度异构冗余、双包冗余电池、两套相互独立的操作系统、“蜻蜓”复合 3D 感知预警、对桨失效时毫秒级动力重构。<sup class="ref">[1]<a href="#ref1">¹</a></sup><sup class="ref">[2]<a href="#ref2">²</a></sup><sup class="ref">[5]<a href="#ref5">⁵</a></sup></p>
+<p>4. <b>未披露（本报告不做猜测）：</b>整机降落伞是否装机 X3-F、单/多桨失效后的可控包线、电池热失控蔓延试验、对接机构锁止与误分离设计、阵风风况包线、坠撞乘员保护设计、失联自动返航的触发逻辑。</p>
+<p>5. <b>对标位置：</b>已取证的亿航 EH216-S 在民航局专用条件下完成了飞控三余度、电池独立隔离、防火、链路冗余等条款审定，是 X3-F 取证前可参照的安全基线；EASA SC-VTOL 增强型（Enhanced）将灾难性失效目标定在 10⁻⁹/飞行小时且单故障不得导致灾难性后果，X3-F 目前无任何公开安全概率指标。<sup class="ref">[6]<a href="#ref6">⁶</a></sup><sup class="ref">[7]<a href="#ref7">⁷</a></sup></p>
+
+<div class="cards">
+  <div class="card"><div class="num">3<small> 套</small></div><div class="lab">异构飞控导航冗余（企业声称，试验未公开）<sup class="ref">[5]<a href="#ref5">⁵</a></sup></div></div>
+  <div class="card"><div class="num">2<small> 包</small></div><div class="lab">动力电池冗余（企业声称，热失控试验未公开）<sup class="ref">[5]<a href="#ref5">⁵</a></sup></div></div>
+  <div class="card"><div class="num">0<small> 项</small></div><div class="lab">公开故障注入/包线/坠撞试验数据（截至截止日）</div></div>
+  <div class="card"><div class="num">10⁻⁹<small>/h</small></div><div class="lab">SC-VTOL Enhanced 灾难性失效目标（对标，非本机型承诺）<sup class="ref">[7]<a href="#ref7">⁷</a></sup></div></div>
+</div>
+</section>
+
+<!-- ===================== 01 ===================== -->
+<section id="s01">
+<h2 class="sec"><span class="no">01</span>安全分析范围、对象与方法</h2>
+<h3>1.1 系统边界</h3>
+<p>本次分析对象为“陆地航母”系统的安全相关部分，边界划分为四个层级：</p>
+<table>
+  <thead><tr><th>层级</th><th>组成</th><th>本次是否覆盖</th></tr></thead>
+  <tbody>
+  <tr><td>飞行体 X3-F</td><td>六旋翼双涵道推进、双包电池、三余度飞控导航、双人座舱、感知系统</td><td>重点分析</td></tr>
+  <tr><td>陆行体（地面平台）</td><td>三轴六轮增程底盘、收纳与补能接口</td><td>仅分析与飞行体交接相关的安全接口，不展开道路车辆整车安全</td></tr>
+  <tr><td>对接机构</td><td>飞行体折叠收纳、一键分离/结合、锁止</td><td>按公开信息缺失做危害辨识与缺口分析</td></tr>
+  <tr><td>运行环境与人员</td><td>低空气象、障碍物、地面人员、乘客、训练与指挥体系</td><td>覆盖</td></tr>
+  </tbody>
+</table>
+
+<h3>1.2 方法链与标准依据</h3>
+<p>本报告采用航空与汽车通用的系统安全评估链：初步危险分析（PHA）→ 失效模式与影响分析（FMEA/FMECA）→ 故障树分析（FTA）→ 预期功能安全（SOTIF）场景分析 → 风险矩阵定级。方法学对标 SAE ARP4754A（研制过程）与 ARP4761（安全评估），并结合 ISO 26262（功能安全）、ISO 21448（SOTIF）、ISO 34502（场景评价）与适航专用条件。<sup class="ref">[18]<a href="#ref18">¹⁸</a></sup><sup class="ref">[19]<a href="#ref19">¹⁹</a></sup><sup class="ref">[20]<a href="#ref20">²⁰</a></sup><sup class="ref">[21]<a href="#ref21">²¹</a></sup></p>
+<table>
+  <thead><tr><th>标准/指南</th><th>适用要点</th><th>证据等级</th></tr></thead>
+  <tbody>
+  <tr><td>ISO 26262:2018 道路车辆功能安全</td><td>危害分析、ASIL 等级、安全需求与验证闭环</td><td><span class="tag std">标准</span></td></tr>
+  <tr><td>ISO 21448:2022 预期功能安全（SOTIF）</td><td>区分系统失效与预期功能不足，辨识感知/边界/误操作场景</td><td><span class="tag std">标准</span></td></tr>
+  <tr><td>EASA SC-VTOL（含 MOC）</td><td>Basic/Enhanced 分类；单故障不导致灾难性后果；受控应急降落/继续安全飞行；乘员与坠撞保护</td><td><span class="tag std">标准</span></td></tr>
+  <tr><td>CCAR-21 与 EH216-S 专用条件</td><td>境内有人/无人 eVTOL 审定框架；飞控、电池、防火、链路冗余条款实例</td><td><span class="tag std">标准</span></td></tr>
+  <tr><td>FAA Part 194（SFAR No.120）</td><td>动力提升航空器驾驶员资质、训练与运行规则（2024.11）</td><td><span class="tag std">标准</span></td></tr>
+  </tbody>
+</table>
+
+<h3>1.3 证据分级与本报告评分约定</h3>
+<p><span class="tag official">官方</span>企业官网/官方新闻稿；<span class="tag claim">企业自述</span>企业账号视频、发布会口述（无第三方试验佐证）；<span class="tag media">媒体</span>第三方报道；<span class="tag std">标准</span>公开标准文献；<span class="tag calc">本文评估</span>FMEA 严酷度 S、频度 O、探测度 D 与 RPN 为教学尺度打分（1—10 分），用于相对排序，不是工程实测概率。</p>
+<div class="callout warn">
+<p><b>边界声明：</b>本报告不替代适航审定；凡企业未公开的设计参数与试验结果，均以“未披露”标注，并用工程机理做“应当验证什么”的推导，不把推导写成事实。</p>
+</div>
+</section>
+
+<!-- ===================== 02 ===================== -->
+<section id="s02">
+<h2 class="sec"><span class="no">02</span>运行剖面与危险辨识（PHA）</h2>
+<p>按一次完整任务划分六个运行阶段，逐阶段列出主要危险事件；后果等级为本文定性判断。</p>
+<table>
+  <thead><tr><th>阶段</th><th>主要危险事件</th><th>后果方向</th><th>公开安全措施状态</th></tr></thead>
+  <tbody>
+  <tr><td>S1 地面行驶与停放</td><td>飞行体未锁止脱落；补能电路误操作；陆行体与周边人员剐蹭</td><td>设备损坏、人员受伤</td><td>锁止设计未披露；补能接口规程未公开</td></tr>
+  <tr><td>S2 对接/分离（地面）</td><td>误分离、对接失败、对位偏差、机构卡滞</td><td>机构损坏、延误</td><td>“一键自动分合”为企业声称，机构细节未披露</td></tr>
+  <tr><td>S3 起飞与爬升</td><td>单桨失效、动力重构失败、电池骤降、离地高度不足</td><td>姿态失控、坠地</td><td>冗余架构声称；无公开故障注入数据</td></tr>
+  <tr><td>S4 巡航/悬停飞行</td><td>双桨失效、飞控两通道失效、通信链路丢失、感知漏检障碍物、阵风超包线</td><td>失控、相撞、迫降</td><td>三余度/双包/感知声称；包线未公开</td></tr>
+  <tr><td>S5 降落</td><td>下降率过大、落点偏差、视觉参考丢失</td><td>硬着陆、结构损伤</td><td>降落视野辅助为企业声称</td></tr>
+  <tr><td>S6 应急迫降/救生</td><td>全域失效、无迫降场、救生系统未触发</td><td>坠毁、乘员伤亡</td><td>整机伞是否装机未披露；X2 开伞试验仅为技术储备</td></tr>
+  </tbody>
+</table>
+<p class="tbl-note">PHA 仅做危害枚举与初筛，逐项严重度排序在 04 节 FMEA 中完成。</p>
+</section>
+
+<!-- ===================== 03 ===================== -->
+<section id="s03">
+<h2 class="sec"><span class="no">03</span>关键系统与失效机理分析</h2>
+
+<h3>3.1 分布式六旋翼双涵道推进系统</h3>
+<p>飞行体采用六轴六桨双涵道构型：六套独立电机-桨叶单元分布式布置，理论上单桨失效后由其余桨叶重新分配拉力维持姿态，这是分布式电推进相对单旋翼直升机的固有安全优势。<sup class="ref">[16]<a href="#ref16">¹⁶</a></sup>学术仿真研究表明，多旋翼在单电机失效后可通过控制分配恢复稳定，但失效桨数增加后姿态性能显著下降，对角双电机失效会出现约 10° 偏航不稳，巡航段剩余电机需输出 80%—90% 最大油门。<sup class="ref">[15]<a href="#ref15">¹⁵</a></sup><sup class="ref">[16]<a href="#ref16">¹⁶</a></sup>需要强调：这类结论来自仿真与原型机研究，不能直接当作 X3-F 的实测包线。</p>
+<p>企业团队在拆解自述中称：对桨失效时双重高压电路保险实现微秒级隔离、毫秒级动力重构，确保动力无中断。<sup class="ref">[5]<a href="#ref5">⁵</a></sup>该机制属<span class="tag claim">企业自述</span>，公开材料未见隔离时间、重构后可控倾角范围的试验记录。涵道包裹桨叶可降低地面人员卷入风险与下洗噪声，但涵道本身一旦变形或异物卡入，维护与失效模式不同于开放式旋翼。<sup class="ref">[17]<a href="#ref17">¹⁷</a></sup></p>
+
+<h3>3.2 800V 高压电池与热失控</h3>
+<p>飞行体采用双包冗余航空级电池（能量密度 255 Wh/kg，官网口径），企业自述“每个电池都能保障安全飞行和降落”。<sup class="ref">[5]<a href="#ref5">⁵</a></sup><sup class="ref">[29]<a href="#ref29">²⁹</a></sup>电池安全的关键问题不在“有没有第二包”，而在：单包热失控后能否隔离、蔓延到另一包的概率、火警告警与断电逻辑。EH216-S 专用条件 PEU.E025 要求多套电池系统相互独立、单包失效不导致另一包丧失、电池与人员舱隔离并具备爆破/起火保护；X3-F 对应设计与试验未披露。<sup class="ref">[6]<a href="#ref6">⁶</a></sup></p>
+
+<h3>3.3 三余度飞控导航与两套操作系统</h3>
+<p>官方通稿：智能飞控导航采用三余度异构冗余（不同结构硬件与软件），减少单一故障模式影响。<sup class="ref">[1]<a href="#ref1">¹</a></sup>团队自述：三套异构飞控导航冗余即使两套失效仍可安全飞行；两套操作系统相互独立，任一失效可随时切换。<sup class="ref">[5]<a href="#ref5">⁵</a></sup>三余度架构的安全前提是表决/重构逻辑经过故障注入验证；“两套失效仍可飞”属于极端降级状态，公开材料未给出该状态下的可控边界与持续时间。</p>
+
+<h3>3.4 感知、导航与通信链路</h3>
+<p>企业自述配备“蜻蜓”复合 3D 感知预警系统，提前识别危险和障碍物；多余度总线通信冗余、保障空中在线。<sup class="ref">[5]<a href="#ref5">⁵</a></sup>但感知盲区（侧下方、小体积动态障碍、镜面反射）、卫星导航遮挡（楼宇/峡谷）、通信链路丢失后的处置策略（自动返航/悬停/迫降）均未公开。对照 EH216-S 专用条件，数据链路需冗余备份、商用移动网络应跨运营商，并需识别、评估、缓解安全漏洞。<sup class="ref">[6]<a href="#ref6">⁶</a></sup></p>
+
+<h3>3.5 对接机构：本报告识别的最大公开信息缺口</h3>
+<p>分体式构型独有的风险集中在陆/空交接：飞行体在空中或行驶中误分离、对接锁止失效导致脱落、折叠机构卡滞。公开材料仅称“一键自动分离结合”，未见锁止形式、误分离抑制、地面锁紧互锁、检修规程的任何说明。该机构的失效后果可直接致命，却缺少公开安全论证，属高优先级补充项。</p>
+
+<h3>3.6 低空环境与外部威胁</h3>
+<p>低空环境风险研究将威胁分为气象（低空风切变、辐射雾能见度骤降、雷暴乱流）、障碍物（高压线、通信塔、动态升空物体）、地形（峡谷、水面镜面反射误判高度）三类。<sup class="ref">[14]<a href="#ref14">¹⁴</a></sup>多旋翼在阵风下姿态扰动显著，学术控制研究以 8.75 m/s 垂向阵风作为验证工况；X3-F 的允许风速、能见度、温度包线未披露。<sup class="ref">[15]<a href="#ref15">¹⁵</a></sup>鸟击、外来物（FOD）、地面人员进入下洗区与噪声影响同样需在运行 SOP 中约束。</p>
+</section>
+
+<!-- ===================== 04 FMEA ===================== -->
+<section id="s04">
+<h2 class="sec"><span class="no">04</span>FMEA/FMECA：关键失效模式分析</h2>
+<p>评分约定：S（严酷度）、O（频度）、D（探测度，值越大越难发现）各 1—10；RPN = S×O×D，仅用于本报告内部相对排序。风险等级：RPN &lt; 40 低（可接受）；40—100 中（需缓解）；&gt; 100 高（不可接受，需设计改进或补做试验）。所有分值为<span class="tag calc">本文评估</span>，非实测。</p>
+<table>
+  <thead><tr><th>#</th><th>子系统/失效模式</th><th>后果</th><th>S</th><th>O</th><th>D</th><th>RPN</th><th>等级</th><th>现有措施与状态</th></tr></thead>
+  <tbody>
+  <tr><td>F1</td><td>单旋翼（电机/桨）失效</td><td>姿态扰动，剩余桨重构分配推力</td><td>7</td><td>3</td><td>4</td><td>84</td><td>中</td><td><span class="tag claim">声称</span>毫秒级动力重构；故障注入试验未公开</td></tr>
+  <tr><td>F2</td><td>两副相邻旋翼同时失效</td><td>升力不足，可控下降或失控</td><td>9</td><td>2</td><td>5</td><td>90</td><td>中</td><td>无公开应对策略；超出单故障冗余设计</td></tr>
+  <tr><td>F3</td><td>桨叶断裂/非包容碎片</td><td>碎片伤及座舱或地面人员</td><td>9</td><td>2</td><td>6</td><td>108</td><td><span class="tag red">高</span></td><td>涵道包裹仅降低外露风险；碎片包容试验未披露</td></tr>
+  <tr><td>F4</td><td>单包电池热失控</td><td>起火、失能、威胁另一包</td><td>9</td><td>2</td><td>5</td><td>90</td><td>中</td><td>双包冗余声称；隔离/蔓延试验未披露</td></tr>
+  <tr><td>F5</td><td>双包电池同时失效/耗尽</td><td>全面失去动力</td><td>10</td><td>1</td><td>6</td><td>60</td><td>中</td><td>无备份能源；依赖迫降/救生，未公开</td></tr>
+  <tr><td>F6</td><td>飞控单通道失效</td><td>三余度切换至剩余通道</td><td>6</td><td>3</td><td>3</td><td>54</td><td>中</td><td><span class="tag claim">声称</span>三余度异构；表决逻辑试验未公开</td></tr>
+  <tr><td>F7</td><td>两余度飞控同时失效</td><td>仅剩单通道，降级飞行</td><td>9</td><td>1</td><td>5</td><td>45</td><td>中</td><td>团队口述“两套失效仍可飞”，无验证</td></tr>
+  <tr><td>F8</td><td>通信/数据链路丢失</td><td>失联，地面无法介入</td><td>8</td><td>3</td><td>5</td><td>120</td><td><span class="tag red">高</span></td><td>链路冗余声称；失联返航逻辑未披露</td></tr>
+  <tr><td>F9</td><td>感知漏检/盲区</td><td>撞障碍物或电线</td><td>8</td><td>4</td><td>6</td><td>192</td><td><span class="tag red">高</span></td><td>“蜻蜓”3D 感知为声称；盲区测试未公开</td></tr>
+  <tr><td>F10</td><td>对接机构空中误分离</td><td>飞行体脱离陆行体（仅行驶阶段风险）</td><td>10</td><td>1</td><td>7</td><td>70</td><td>中</td><td>锁止/互锁设计未披露</td></tr>
+  <tr><td>F11</td><td>对接锁止失效（地面）</td><td>飞行体在陆行体上脱落</td><td>9</td><td>2</td><td>6</td><td>108</td><td><span class="tag red">高</span></td><td>机构细节未披露</td></tr>
+  <tr><td>F12</td><td>阵风/风切变超出包线</td><td>姿态失控、偏出航线</td><td>8</td><td>3</td><td>5</td><td>120</td><td><span class="tag red">高</span></td><td>允许风况包线未公开；运营气象限制未公开</td></tr>
+  <tr><td>F13</td><td>手动模式乘客误操作</td><td>误推杆导致急剧姿态变化</td><td>7</td><td>3</td><td>4</td><td>84</td><td>中</td><td>单杆操纵、训练时长要求未公开</td></tr>
+  <tr><td>F14</td><td>地面人员进入下洗区</td><td>风力卷入、碎片伤害</td><td>6</td><td>3</td><td>3</td><td>54</td><td>中</td><td>场地隔离 SOP 未公开</td></tr>
+  </tbody>
+</table>
+<p class="tbl-note">高风险项（RPN&gt;100）：F3 碎片包容、F8 链路丢失、F9 感知盲区、F11 锁止失效、F12 超包线气象——均为“设计未公开/试验未公开”，不代表必然发生，但取证前必须补证。</p>
+</section>
+
+<!-- ===================== 05 FTA ===================== -->
+<section id="s05">
+<h2 class="sec"><span class="no">05</span>FTA 故障树：顶事件“飞行中失控/坠毁”</h2>
+<p>顶事件 T = 飞行中失控或坠毁。用 OR 门（任一中间事件发生即触发）与 AND 门（多事件同时发生）展开；标注每个基本事件是否有冗余覆盖。下表为表格化故障树，层级与门逻辑对应完整树结构。</p>
+<div class="fta">
+<div class="l1">T：飞行中失控/坠毁 <span class="gate">[OR]</span>（A ∨ B ∨ C ∨ D ∨ E ∨ F）</div>
+<div class="l2"><b>A. 动力系统失效</b> <span class="gate">[OR]</span></div>
+<div class="l3">A1 单桨失效后动力重构失败 —— F1；冗余覆盖：<span class="tag claim">声称</span>，试验未公开</div>
+<div class="l3">A2 两桨以上失效 —— F2；无冗余覆盖</div>
+<div class="l3">A3 桨叶断裂碎片击穿 —— F3；无冗余覆盖</div>
+<div class="l2"><b>B. 飞控与导航失效</b> <span class="gate">[OR]</span></div>
+<div class="l3">B1 三余度飞控全部失效 —— F6/F7；冗余覆盖：三余度（声称），双余度失效后状态未验证</div>
+<div class="l3">B2 导航定位丢失（GNSS 遮挡/欺骗） —— 未公开对策</div>
+<div class="l2"><b>C. 能源失效</b> <span class="gate">[OR]</span></div>
+<div class="l3">C1 单包热失控蔓延 —— F4；隔离设计未披露</div>
+<div class="l3">C2 双包同时耗尽 —— F5；无备份能源</div>
+<div class="l2"><b>D. 环境与外部事件</b> <span class="gate">[OR]</span></div>
+<div class="l3">D1 超包线阵风/风切变 —— F12；包线未公开</div>
+<div class="l3">D2 鸟击/外来物/障碍物碰撞 —— F9；感知声称，盲区未测</div>
+<div class="l3">D3 能见度骤降（雾/雨） —— 运行限制未公开</div>
+<div class="l2"><b>E. 人为与操作</b> <span class="gate">[OR]</span></div>
+<div class="l3">E1 手动误操作 —— F13；训练要求未公开</div>
+<div class="l3">E2 训练不足/应急处置错误 —— 未公开</div>
+<div class="l2"><b>F. 应急系统失效</b> <span class="gate">[OR]</span></div>
+<div class="l3">F-x1 整机降落伞未装机或未触发 —— 是否装机 X3-F <b>未披露</b></div>
+<div class="l3">F-x2 无可用迫降场 —— 运行规划问题</div>
+<div class="l1" style="margin-top:14px"><b>AND 门示例：</b>A2（两桨失效）∧ B2（导航丢失）∧ F-x2（无迫降场）同时发生 → T，任一前提不成立则后果降级。</div>
+</div>
+<div class="callout">
+<p><b>单故障点 vs 冗余覆盖结论：</b>飞控（三余度声称）、电池（双包声称）、操作系统（双套声称）为冗余设计；对接锁止、链路失联策略、感知盲区、碎片包容、整机伞配置为<b>单故障点性质的未公开项</b>。FTA 中未公开项无法赋予概率，只能定性标注缺口。</p>
+</div>
+</section>
+
+<!-- ===================== 06 SOTIF ===================== -->
+<section id="s06">
+<h2 class="sec"><span class="no">06</span>SOTIF：预期功能安全场景分析</h2>
+<p>SOTIF（ISO 21448）区分两类问题：<b>系统失效</b>（硬件/软件坏了，有故障可查）与<b>预期功能不足</b>（部件完好，但场景未被设计覆盖，功能边界外表现不当）。后者无法靠冗余备份解决，只能靠场景识别、边界声明与人机交互设计。<sup class="ref">[19]<a href="#ref19">¹⁹</a></sup></p>
+<table>
+  <thead><tr><th>场景类</th><th>具体场景</th><th>问题类型</th><th>X3-F 公开状态</th></tr></thead>
+  <tbody>
+  <tr><td>SOTIF-1 感知盲区</td><td>侧下方小体积障碍物、高压线缆、低空飞鸟；“蜻蜓”感知视场与分辨率未公开</td><td>预期功能不足</td><td>感知系统为企业声称，盲区测试未公开</td></tr>
+  <tr><td>SOTIF-2 气候退化</td><td>辐射雾能见度骤降、小雨、阵风使感知与导航降级；水面镜面反射误判高度<sup class="ref">[14]<a href="#ref14">¹⁴</a></sup></td><td>预期功能不足</td><td>气象包线与禁飞条件未公开</td></tr>
+  <tr><td>SOTIF-3 自动化边界</td><td>自动模式进入非设计空域/非训练气象，驾驶员（乘客）无能力接管</td><td>人机边界失配</td><td>自动/手动模式切换边界未公开</td></tr>
+  <tr><td>SOTIF-4 人为误操作</td><td>新手手动单杆误推杆、误判模式状态、应急时过度操作</td><td>人因/交互</td><td>训练时长、考核与误操作防护未公开</td></tr>
+  <tr><td>SOTIF-5 链路与网络安全</td><td>通信被干扰/欺骗，地面指挥无法介入</td><td>系统失效 + 安全漏洞</td><td>冗余链路声称；加密与漏洞评估未公开</td></tr>
+  </tbody>
+</table>
+<div class="callout warn">
+<p>SOTIF 的教训：冗余越多越安全的直觉只覆盖“系统失效”；感知漏检、边界外场景、新手误操作在冗余架构下依然发生，必须用场景库与运行边界声明来管理。</p>
+</div>
+</section>
+
+<!-- ===================== 07 ===================== -->
+<section id="s07">
+<h2 class="sec"><span class="no">07</span>安全设计与冗余/应急措施：声称与未披露清单</h2>
+<p>下表逐条核对公开材料，区分“已声称”“已验证”“未披露”，不把声称写成事实。</p>
+<table>
+  <thead><tr><th>安全措施</th><th>公开内容</th><th>状态判定</th></tr></thead>
+  <tbody>
+  <tr><td>全域冗余（动力/飞控/供电/通信/操控）</td><td>官方通稿称第 1 套失效后第 2 套无缝衔接</td><td><span class="tag claim">设计声称</span>，无公开故障注入数据<sup class="ref">[1]<a href="#ref1">¹</a></sup></td></tr>
+  <tr><td>三余度异构飞控导航</td><td>不同结构硬件与软件；团队称两套失效仍可安全飞行</td><td><span class="tag claim">设计声称</span>，表决逻辑未验证公开<sup class="ref">[5]<a href="#ref5">⁵</a></sup></td></tr>
+  <tr><td>双包冗余电池</td><td>团队称每包可保障安全飞行与降落；255 Wh/kg 为官网口径</td><td><span class="tag claim">设计声称</span>，热失控隔离试验未公开<sup class="ref">[29]<a href="#ref29">²⁹</a></sup></td></tr>
+  <tr><td>两套独立操作系统</td><td>任一失效可随时切换</td><td><span class="tag claim">设计声称</span><sup class="ref">[5]<a href="#ref5">⁵</a></sup></td></tr>
+  <tr><td>动力重构（对桨失效）</td><td>微秒级电路隔离、毫秒级动力重构</td><td><span class="tag claim">团队口述</span>，时间指标无第三方佐证<sup class="ref">[5]<a href="#ref5">⁵</a></sup></td></tr>
+  <tr><td>“蜻蜓”复合 3D 感知预警</td><td>提前识别危险与障碍物</td><td><span class="tag claim">设计声称</span>，视场/盲区未公开</td></tr>
+  <tr><td>整机降落伞/多伞救生</td><td>2023.10 X2 完成 50 m 超低空开伞试验（850 kg 配重、接地 5.2 m/s）；属技术储备</td><td><span class="tag open">未披露</span>是否装机 X3-F<sup class="ref">[4]<a href="#ref4">⁴</a></sup><sup class="ref">[32]<a href="#ref32">³²</a></sup></td></tr>
+  <tr><td>失联自动返航/悬停</td><td>未见公开说明</td><td><span class="tag open">未披露</span></td></tr>
+  <tr><td>电池火警告警与断电</td><td>未见公开说明</td><td><span class="tag open">未披露</span></td></tr>
+  <tr><td>坠撞乘员保护/舱门撤离</td><td>未见公开说明</td><td><span class="tag open">未披露</span></td></tr>
+  <tr><td>试验计划（企业宣布）</td><td>拟投超 200 台飞行器，按零部件/系统/整机三层开展单点失效试验与“三高”（高温/高寒/高原）试验</td><td><span class="tag official">计划公开</span>，结果未公开<sup class="ref">[1]<a href="#ref1">¹</a></sup></td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ===================== 08 ===================== -->
+<section id="s08">
+<h2 class="sec"><span class="no">08</span>适航安全路径：境内外边界与 EH216-S 对照</h2>
+<h3>8.1 X3-F 的审定阶段</h3>
+<p>境内：X3-F TC 申请 2024 年 3 月获民航中南局受理，PC 申请 2025 年 5 月受理，截至截止日 TC 未颁发；2026 年 7 月入选民航局首批 eVTOL 适航符合性绿色通道名单。<sup class="ref">[25]<a href="#ref25">²⁵</a></sup><sup class="ref">[26]<a href="#ref26">²⁶</a></sup>产品前期完成了 2024 年 11 月珠海公开首飞与 2025 年 1 月 CES 海外首秀等演示节点；参照型号旅航者 X2 已于 2023 年 1 月获民航中南局特许飞行证，用于试飞验证。<sup class="ref">[3]<a href="#ref3">³</a></sup><sup class="ref">[12]<a href="#ref12">¹²</a></sup><sup class="ref">[28]<a href="#ref28">²⁸</a></sup>境外：2025 年 9 月获阿联酋 GCAA 特许飞行证（试验性许可），2026 年 10 月首架试验机交付阿联酋监管沙盒；特许证不等于型号合格证，不支持商业载客。<sup class="ref">[27]<a href="#ref27">²⁷</a></sup>运行法规依据《无人驾驶航空器飞行管理暂行条例》（2024.1.1 施行）及低空经济配套政策。<sup class="ref">[30]<a href="#ref30">³⁰</a></sup><sup class="ref">[31]<a href="#ref31">³¹</a></sup></p>
+
+<h3>8.2 与 EH216-S 专用条件的安全条款对照</h3>
+<p>EH216-S 是全球首个四证齐全的载人 eVTOL，其民航局专用条件逐条给出了安全底线，可作为 X3-F 取证前的自查清单。<sup class="ref">[6]<a href="#ref6">⁶</a></sup><sup class="ref">[22]<a href="#ref22">²²</a></sup><sup class="ref">[23]<a href="#ref23">²³</a></sup><sup class="ref">[13]<a href="#ref13">¹³</a></sup></p>
+<table>
+  <thead><tr><th>安全条款（EH216-S 专用条件）</th><th>要求要点</th><th>X3-F 对应公开状态</th></tr></thead>
+  <tbody>
+  <tr><td>PEU.C070 应急着陆</td><td>应急着陆即使损坏机体，也须保护乘员免受无法撤离的伤害；乘员载荷不超人体伤害判据</td><td><span class="tag open">未披露</span>坠撞与乘员保护设计</td></tr>
+  <tr><td>PEU.D025/D030 防火</td><td>自熄/耐火材料；火情包容与灭火设施、火警告警；指定火区火灾不影响继续飞行或应急着陆</td><td><span class="tag open">未披露</span></td></tr>
+  <tr><td>PEU.E025 电池与配电</td><td>多套电池独立、单包失效不波及另一包；电池与乘员舱隔离；爆破/起火保护；防止不当充电</td><td><span class="tag claim">声称</span>双包冗余，隔离试验未公开</td></tr>
+  <tr><td>PEU.F 飞控/系统</td><td>指挥、控制、通信、监视数据冗余备份；风险漏洞起飞前/飞行中识别缓解</td><td><span class="tag claim">声称</span>三余度，漏洞评估未公开</td></tr>
+  <tr><td>PEU.H020 链路冗余</td><td>数据链路冗余备份；商用移动网络跨服务商备份</td><td><span class="tag open">未披露</span></td></tr>
+  <tr><td>飞控架构对照</td><td>EH216-S 三套独立飞控；官方另有投票机制与 Fail-Safe 续飞/就近降落判断</td><td>X3-F 三余度声称，故障判断逻辑未公开</td></tr>
+  </tbody>
+</table>
+
+<h3>8.3 国际标准对标</h3>
+<p>EASA SC-VTOL 将 VTOL 分为 Basic（非拥挤区，受控应急降落）与 Enhanced（城市/商业载人，继续安全飞行与着陆）；Enhanced 要求灾难性失效概率 10⁻⁹/飞行小时，且单故障不得导致灾难性后果。<sup class="ref">[7]<a href="#ref7">⁷</a></sup><sup class="ref">[8]<a href="#ref8">⁸</a></sup>美国 FAA 2024 年 11 月发布 Part 194（SFAR No.120），规定动力提升航空器驾驶员资质、训练与运行规则。<sup class="ref">[9]<a href="#ref9">⁹</a></sup><sup class="ref">[10]<a href="#ref10">¹⁰</a></sup>学术综述指出，FAA/EASA/CAAC 三体系正从类比传统规章转向按悬停、过渡、翼载飞行分阶段制定专项要求。<sup class="ref">[11]<a href="#ref11">¹¹</a></sup>X3-F 目前未公布任何安全概率目标，对标 Enhanced 尚缺概率论证。</p>
+</section>
+
+<!-- ===================== 09 ===================== -->
+<section id="s09">
+<h2 class="sec"><span class="no">09</span>风险评估矩阵与残余风险</h2>
+<p>纵轴为严重度（1 轻微—5 灾难），横轴为发生可能性（1—5）。绿=可接受，黄=需缓解，红=不可接受（需设计改进或补试验）。本矩阵为<span class="tag calc">本文评估</span>定性落点。</p>
+<table class="matrix">
+  <tr><td class="axis" rowspan="6">严<br>重<br>度</td><td class="axis" style="width:70px">5</td><td class="m">中</td><td class="h">高</td><td class="h">高</td><td class="h">高</td><td class="h">高</td></tr>
+  <tr><td class="axis">4</td><td class="l">低</td><td class="m">中</td><td class="m">中</td><td class="h">高</td><td class="h">高</td></tr>
+  <tr><td class="axis">3</td><td class="l">低</td><td class="l">低</td><td class="m">中</td><td class="m">中</td><td class="h">高</td></tr>
+  <tr><td class="axis">2</td><td class="l">低</td><td class="l">低</td><td class="l">低</td><td class="m">中</td><td class="m">中</td></tr>
+  <tr><td class="axis">1</td><td class="l">低</td><td class="l">低</td><td class="l">低</td><td class="l">低</td><td class="m">中</td></tr>
+  <tr><td class="axis"></td><td class="axis">1</td><td class="axis">2</td><td class="axis">3</td><td class="axis">4</td><td class="axis">5</td></tr>
+  <tr><td colspan="7" style="text-align:center;border:none;font-weight:700;color:var(--muted)">发生可能性（1—5）→</td></tr>
+</table>
+<table>
+  <thead><tr><th>风险项</th><th>矩阵落点</th><th>残余风险判定</th></tr></thead>
+  <tbody>
+  <tr><td>F9 感知盲区/障碍物碰撞</td><td>严重度4 × 可能性4</td><td><span class="tag red">高</span> 不可接受，需感知试验与运行边界</td></tr>
+  <tr><td>F8 通信链路丢失</td><td>严重度4 × 可能性3</td><td><span class="tag red">高</span> 不可接受，需失联策略与冗余链路</td></tr>
+  <tr><td>F12 超包线阵风</td><td>严重度4 × 可能性3</td><td><span class="tag red">高</span> 不可接受，需风况包线与气象放行</td></tr>
+  <tr><td>F3 碎片击穿 / F11 锁止失效</td><td>严重度4—5 × 可能性2</td><td><span class="tag red">高</span> 不可接受，需结构试验与机构论证</td></tr>
+  <tr><td>F1 单桨失效、F4 单包热失控、F6 单通道飞控失效</td><td>严重度3—4 × 可能性3</td><td><span class="tag calc">中</span> 需补故障注入试验后降级</td></tr>
+  <tr><td>整机伞未装机（F-x1）</td><td>严重度5 × 可能性1</td><td>中—高，属最后防线缺口，需明确配置决策</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ===================== 10 ===================== -->
+<section id="s10">
+<h2 class="sec"><span class="no">10</span>安全改进建议、Safety Case 与 Go/No-Go 门槛</h2>
+<h3>10.1 补证试验清单（取证前必须公开或提交审定）</h3>
+<ul class="tight">
+<li><b>动力：</b>单桨、相邻双桨、对角双桨失效注入试验，记录重构时间、最大倾角、可控边界；桨叶碎片包容试验。</li>
+<li><b>电池：</b>单包热失控试验与蔓延评估、火警告警—断电逻辑、双包隔离验证、不当充电防护。</li>
+<li><b>飞控：</b>三余度表决故障注入（含两通道同时失效的降级边界）、两套操作系统切换试验。</li>
+<li><b>环境：</b>阵风/风切变、能见度、温度包线标定；感知盲区场景库测试（线缆、飞鸟、小体积障碍）。</li>
+<li><b>对接机构：</b>锁止强度、误分离抑制、行驶振动下的保持能力、检修互锁规程。</li>
+<li><b>应急：</b>明确整机伞配置决策；无迫降场条件下的可控应急降落程序（对照 SC-VTOL MOC，不可操纵降落伞不能替代受控迫降）。<sup class="ref">[7]<a href="#ref7">⁷</a></sup></li>
+</ul>
+<h3>10.2 Safety Case（安全案例）结构</h3>
+<p>按“论点—证据—论证”组织：顶层论点“X3-F 在声明运行边界内可接受安全水平”；逐层分解为动力、能源、飞控、环境、人为、应急子论点；每个论点绑定试验报告、分析报告、审定条款证据；缺口项列入待补清单，不得以营销声称充数。</p>
+<h3>10.3 Go/No-Go 安全门槛</h3>
+<table>
+  <thead><tr><th>门槛</th><th>放行证据</th><th>当前状态</th></tr></thead>
+  <tbody>
+  <tr><td>Gate 1 单故障安全</td><td>单桨/单包/单通道失效注入试验通过，重构后可控</td><td>未公开，No-Go</td></tr>
+  <tr><td>Gate 2 环境包线</td><td>风况、能见度、温度包线标定并写入运行限制</td><td>未公开，No-Go</td></tr>
+  <tr><td>Gate 3 应急与坠落防护</td><td>伞/迫降策略明确；坠撞乘员保护与撤离设计验证</td><td>未披露，No-Go</td></tr>
+  <tr><td>Gate 4 审定安全闭环</td><td>TC/PC 受理后条款逐项闭合、Safety Case 通过评审</td><td>受理中，No-Go</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ===================== 11 ===================== -->
+<section id="s11">
+<h2 class="sec"><span class="no">11</span>课程启示与局限</h2>
+<h3>11.1 课程启示</h3>
+<ul class="tight">
+<li><b>冗余不是安全的全部：</b>三余度飞控、双包电池只覆盖系统失效；感知盲区、边界外场景、新手误操作属 SOTIF 范畴，冗余不解决。</li>
+<li><b>声称与证据分开记账：</b>企业“毫秒级重构”“两套失效仍可飞”是设计声称，需故障注入试验、概率分析与审定条款闭合才能升级为安全事实。</li>
+<li><b>适航是安全基线，不是安全本身：</b>EH216-S 的专用条件逐条说明“可接受安全水平”需要什么证据；X3-F 应对照自查，而非以演示飞行代替。</li>
+<li><b>分体式特有风险要单列：</b>对接机构锁止/误分离是陆地航母独有问题，通用多旋翼安全模板覆盖不到。</li>
+</ul>
+<h3>11.2 局限与未决问题</h3>
+<ul class="tight">
+<li>本报告无企业内部设计数据，所有未披露项以公开材料为准，RPN 为教学相对评分，不代表实测概率。</li>
+<li>FTA 未公开项无法赋概率，仅做定性缺口标注；对接机构、整机伞配置需企业后续公开。</li>
+<li>X3-F 取证进展、试验结果与 A868 安全设计需持续追踪至下一节点。</li>
+</ul>
+</section>
+
+<!-- ===================== 参考文献 ===================== -->
+<section id="refs">
+<h2 class="sec"><span class="no">§</span>参考文献</h2>
+<ol class="refs">
+<li id="ref1">小鹏汽车. 小鹏汇天“陆地航母”飞行汽车实车首次亮相广州，飞行首秀演绎未来应用场景（全域冗余、三余度飞控、200 台试验计划）[EB/OL]. 2024-09-04[2026-11-23]. https://www.xiaopeng.com/news/company_news/5361.html</li>
+<li id="ref2">小鹏汽车. 小鹏分享物理 AI 涌现成果：发布 A868、陆地航母订单突破 7000 台与全域冗余[EB/OL]. 2025-11-17[2026-11-23]. https://www.xiaopeng.com/news/company_news/5511.html</li>
+<li id="ref3">小鹏汽车. 小鹏汇天“陆地航母”珠海航展完成全球公开首飞[EB/OL]. 2024-11-12[2026-11-23]. https://www.xiaopeng.com/news/company_news/5419.html</li>
+<li id="ref4">小鹏汇天团队（抖音账号）. 整机多伞救生系统 50 m 超低空开伞试验：850 kg 配重、接地 5.2 m/s[EB/OL]. 2023-10-19[2026-11-23]. https://www.iesdouyin.com/share/video/7291546359696559419</li>
+<li id="ref5">小鹏汇天团队（抖音账号）. 陆地航母拆解自述：双包电池、三套飞控、双操作系统、蜻蜓感知、动力重构[EB/OL]. 2025-11-08[2026-11-23]. https://www.iesdouyin.com/share/video/7570253829296459059</li>
+<li id="ref6">中国民用航空局. 亿航 EH216-S 型无人驾驶航空器系统专用条件（PEU.C070/D025/E025/F/H020）[Z]. 2022-02-09[2026-11-23]. http://www.caac.gov.cn/XXGK/XXGK/BZGF/ZYTJHHM/202202/P020220222611863596239.pdf</li>
+<li id="ref7">European Union Aviation Safety Agency. Special Condition for Small-Category VTOL (SC-VTOL) / MOC[Z]. EASA, 2019/2021[2026-11-23]. https://www.easa.europa.eu/document-library/special-condition/vtol</li>
+<li id="ref8">EASA. Vertiports in the Urban Environment: Basic / Enhanced Category 与继续安全飞行、受控应急降落[EB/OL]. 2023[2026-11-23]. https://www.easa.europa.eu/en/light/topics/vertiports-urban-environment</li>
+<li id="ref9">U.S. Federal Aviation Administration. With New Rule, FAA is Ready for Air Travel of the Future（Powered-Lift Final Rule）[EB/OL]. 2024-10-22[2026-11-23]. https://www.faa.gov/newsroom/new-rule-faa-ready-air-travel-future</li>
+<li id="ref10">FAA. Powered Lift Part 194 SFAR FAQ[EB/OL]. [2026-11-23]. https://www.faa.gov/air-taxis/FAQ</li>
+<li id="ref11">动力提升航空器适航标准对比研究——基于 FAA、EASA 与 CAAC 体系的分析（GAMA 2020 概念文件、CAAC 2026.2 标准、10⁻⁹ 目标）[J/OL]. 前沿科学论文平台, 2026[2026-11-23]. https://cn.front-sci.com/index.php/etd/article/download/22238/20964</li>
+<li id="ref12">小鹏汽车. 小鹏汇天“陆地航母”飞行汽车海外首秀，计划 2026 年量产交付[EB/OL]. 2025-01-08[2026-11-23]. https://www.xiaopeng.com/news/company_news/5438.html</li>
+<li id="ref13">亿航智能. EH216-S 适航审定历程（TC/AC/PC/OC）[EB/OL]. [2026-11-23]. https://www.ehang.com/cn/ehang216s/airworthiness/</li>
+<li id="ref14">北京理工大学学报. 低空航行风险感知、评估与控制方法研究综述（气象/障碍物/地形/设备/人因风险分类）[J/OL]. 2025[2026-11-23]. https://journal.bit.edu.cn/zr/article/doi/10.15918/j.tbit1001-0645.2025.166?viewType=HTML</li>
+<li id="ref15">基于增量非线性动态逆的倾转旋翼 eVTOL 单旋翼失效控制（8.75 m/s 阵风、1/6 号旋翼失效恢复稳定）[J/OL]. 中国航天期刊平台, 2025-09[2026-11-23]. https://www.spacejournal.cn/tjjs/en/article/pdf/preview/c3ee9b86-960c-4b50-b8da-878b21e83120.pdf</li>
+<li id="ref16">ASADI KHANOUKI M, SADAT-NEJAD Y, POURMOSTAGHIMI N. Simulation-Based Evaluation of Motor Failure Resilience in a Prototyped Multirotor eVTOL[C]. Vertical Flight Society 81st Annual Forum, 2025[2026-11-23]. https://proceedings.vtol.org/81/evtol/simulation-based-evaluation-of-motor-failure-resilience-in-a-prototyped-multirotor-evtol</li>
+<li id="ref17">光明日报. 低空交通 城市的“第二次进化”：分布式动力冗余、整机降落伞、地面安全网格三层安全逻辑[N/OL]. 2026-04-09[2026-11-23]. https://epaper.gmw.cn/gmrb/html/content/202604/09/content_10624.html</li>
+<li id="ref18">INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO 26262:2018 Road vehicles — Functional safety[S]. Geneva: ISO, 2018.</li>
+<li id="ref19">INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO 21448:2022 Road vehicles — Safety of the intended functionality (SOTIF)[S]. Geneva: ISO, 2022.</li>
+<li id="ref20">INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO 34502:2022 Road vehicles — Test scenarios for automated driving systems[S]. Geneva: ISO, 2022.</li>
+<li id="ref21">SAE International. ARP4754A Development Process / ARP4761 Safety Assessment Process[S]. SAE, 2010.</li>
+<li id="ref22">人民网. “空中的士”飞入现实：EH216-S 全备份设计、累计超 6.4 万架次安全飞行[EB/OL]. 2025-04-26[2026-11-23]. http://finance.people.com.cn/n1/2025/0426/c1004-40468562.html</li>
+<li id="ref23">亿航智能. EH216-S 官方安全页：多套备份、飞控投票机制、Fail-Safe、加密通信[EB/OL]. [2026-11-23]. https://www.ehang.com/cn/ehang216s/</li>
+<li id="ref25">中国新闻网. 2025 年终观察：低空经济怎样加速跑？（PC 受理、黄埔工厂、首台下线）[EB/OL]. 2025-12-12[2026-11-23]. https://www.chinanews.com/cj/2025/12-12/10532255.shtml</li>
+<li id="ref26">腾讯网（转雷峰网）. 200 万元买辆车再带架飞机？小鹏“陆地航母”交付时间曝光（绿色通道、2027 交付）[EB/OL]. 2026-11-06[2026-11-23]. https://view.inews.qq.com/k/20261106A0DFRU00</li>
+<li id="ref27">央视网汽车频道. 阿联酋先进低空飞行监管示范区首架汇天 X3-F 试验机下线交付[EB/OL]. 2026-10-21[2026-11-23]. https://auto.cctv.com/2026/10/21/ARTIbjhrmAosltkYJQHjh06a261021.shtml</li>
+<li id="ref28">小鹏汽车. 小鹏汇天旅航者 X2 成功获颁特许飞行证[EB/OL]. 2023-01-30[2026-11-23]. https://www.xiaopeng.com/news/company_news/4775.html</li>
+<li id="ref29">小鹏汇天（ARIDGE）. 陆地航母 X3 产品页（双包电池、255 Wh/kg、推重比 12）[EB/OL]. [2026-11-23]. https://cn.aridge.com/x3</li>
+<li id="ref30">国务院、中央军事委员会. 无人驾驶航空器飞行管理暂行条例（令第 761 号）[Z]. 2023-05-31 公布，2024-01-01 施行. http://www.caac.gov.cn/PHONE/XXGK_17/XXGK/FLFG/202401/P020240115348470011000.pdf</li>
+<li id="ref31">新华网客户端. 低空经济动态观察（第一期）：制度框架与 eVTOL 适航指南[EB/OL]. 2026-11-03[2026-11-23]. https://app.xinhuanet.com/news/article.html?articleId=202611034407d7e8a50a431ab8c03ae9bf637f7f</li>
+<li id="ref32">小鹏汇天团队（抖音账号）. 自研整机多伞救生系统介绍：超低空开伞、组合式多伞冗余架构[EB/OL]. 2023-10-23[2026-11-23]. https://www.iesdouyin.com/share/video/7293076957598666035</li>
+</ol>
+</section>
+</main>
+
+<footer>
+  <p>课程：Automated Vehicles Safety / Fundamentals of Flying Vehicle Technology（飞行汽车技术基础）· 2026 · 吉林大学车辆工程课程作业</p>
+  <p>本页面为课程安全分析作业，所有企业与产品名称归各自权利人所有；图片仅用于课堂教学分析。证据截止日：2026-11-23。</p>
+</footer>
+</body>
+</html>
